@@ -1,0 +1,923 @@
+.debugger-canvas {
+  position: fixed;
+  bottom: 0px;
+  direction: ltr;
+  width: 100%;
+  border-top: 1px solid #cccccc;
+  background-color: white;
+  z-index: 1000000001;
+  color: rgb(0, 0, 0);
+  cursor: default;
+  font-size: 14px;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-box-shadow: -2px 0px 2px rgba(0, 0, 0, 0.27);
+  -moz-box-shadow: -2px 0px 2px rgba(0, 0, 0, 0.27);
+  box-shadow: -2px 0px 2px rgba(0, 0, 0, 0.27);
+}
+.debugger-canvas * {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+}
+.debugger-canvas .top-bar {
+  display: flex;
+}
+.debugger-canvas .element-area,
+.debugger-canvas .workflow-area,
+.debugger-canvas .error-area,
+.debugger-canvas .navigate-options-area {
+  height: 50px;
+  padding: 0 10px 0 10px;
+  overflow: hidden;
+}
+.debugger-canvas .element-area .title,
+.debugger-canvas .element-area .current-element,
+.debugger-canvas .workflow-area .title,
+.debugger-canvas .workflow-area .current-element,
+.debugger-canvas .error-area .title,
+.debugger-canvas .error-area .current-element,
+.debugger-canvas .navigate-options-area .title,
+.debugger-canvas .navigate-options-area .current-element {
+  margin-left: 10px;
+  float: left;
+  padding-top: 18px;
+}
+.debugger-canvas .element-area .title,
+.debugger-canvas .workflow-area .title,
+.debugger-canvas .error-area .title,
+.debugger-canvas .navigate-options-area .title {
+  margin-left: 10px;
+}
+.debugger-canvas .element-area .current-element,
+.debugger-canvas .workflow-area .current-element,
+.debugger-canvas .error-area .current-element,
+.debugger-canvas .navigate-options-area .current-element {
+  max-width: 142px;
+  white-space: pre;
+  overflow: hidden;
+}
+.debugger-canvas .element-area .btn,
+.debugger-canvas .workflow-area .btn,
+.debugger-canvas .error-area .btn,
+.debugger-canvas .navigate-options-area .btn {
+  margin-top: 10px;
+}
+.debugger-canvas .element-area.disabled *,
+.debugger-canvas .workflow-area.disabled * {
+  pointer-events: none;
+  opacity: 0.3;
+}
+.debugger-canvas .workflow-area {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.debugger-canvas .workflow-area .btn.workflow-mode {
+  float: left;
+  margin-left: 30px;
+  width: 100px;
+}
+.debugger-canvas .error-area .error-icon {
+  margin-top: 13px;
+  cursor: pointer;
+}
+.debugger-canvas .error-area .error-icon:before {
+  display: block;
+  font-size: 25px;
+  font-family: "FontAwesome";
+  color: #a2a2a2;
+  content: "\f071";
+}
+.debugger-canvas .error-area .error-icon.has-errors:before {
+  color: var(--color_danger_default_rgb);
+}
+.debugger-canvas .error-area .error-count {
+  color: var(--color_danger_default_rgb);
+  text-align: center;
+  font-size: 10px;
+}
+.debugger-canvas .error-area.warning-only .error-icon.has-errors:before,
+.debugger-canvas .error-area.warning-only .error-count {
+  color: #fa9500;
+}
+.debugger-canvas .navigate-options-area .navigate-options-icon {
+  margin-top: 13px;
+  cursor: pointer;
+}
+.debugger-canvas .navigate-options-area .navigate-options-icon:before {
+  display: block;
+  font-size: 25px;
+  font-family: "Material Icons";
+  color: #a2a2a2;
+  content: "\e5d4";
+}
+.debugger-canvas .navigate-options-area .navigate-options-icon:hover {
+  background-color: rgba(2, 5, 211, 0.04);
+  border-radius: 2px;
+}
+.debugger-canvas .element-area,
+.debugger-canvas .error-area,
+.debugger-canvas .navigate-options-area {
+  border-left: 1px solid #cccccc;
+}
+.debugger-canvas .element-area .btn.element-analysis,
+.debugger-canvas .element-area .responsive-area,
+.debugger-canvas .error-area .btn.element-analysis,
+.debugger-canvas .error-area .responsive-area,
+.debugger-canvas .navigate-options-area .btn.element-analysis,
+.debugger-canvas .navigate-options-area .responsive-area {
+  float: right;
+}
+.debugger-canvas .responsive-area {
+  clear: both;
+  font-size: 8px;
+  margin-top: 1px;
+  cursor: pointer;
+  text-align: center;
+  width: 92px;
+  color: #9aabb1;
+}
+.debugger-canvas .element-area {
+  width: 378px;
+}
+.debugger-canvas .element-picker-wrapper {
+  float: left;
+  margin-top: 10px;
+  width: 275px;
+  height: 30px;
+  cursor: pointer;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer {
+  cursor: pointer;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer.disabled {
+  cursor: default;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-caption-container.new-composer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #dedede;
+  height: 30px;
+  width: 265px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  padding-left: 10px;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-caption-container.new-composer .autocomplete-input.new-composer,
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-caption-container.new-composer .dropdown-caption.new-composer {
+  border: none;
+  font-size: inherit;
+  margin-top: 5px;
+  color: inherit;
+  height: 22px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-caption-container.new-composer .dropdown-icon.fa.fa-caret-down {
+  margin-right: 10px;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-items-positioner.new-composer {
+  position: absolute;
+  width: 275px;
+  height: auto;
+  max-height: 230px;
+  overflow-y: scroll;
+  background: white;
+  font-size: 12px;
+  border: 1px solid whitesmoke;
+  border-radius: 2px;
+}
+.debugger-canvas .element-picker-wrapper .composer-container.new-composer .dropdown-items-positioner.new-composer .dropdown-item-container {
+  padding: 7px 15px 7px 12px;
+  cursor: pointer;
+}
+.debugger-canvas .element-picker-wrapper .spot {
+  border: 1px solid #dedede;
+  -webkit-border-radius: 2px !important;
+  -moz-border-radius: 2px !important;
+  border-radius: 2px !important;
+  padding-left: 10px !important;
+  padding-top: 8px !important;
+  height: 22px;
+  overflow: hidden;
+  white-space: pre;
+}
+.debugger-canvas .element-picker-wrapper .spot:before {
+  color: rgb(0, 0, 0);
+  content: "\f0d7";
+  font-family: "FontAwesome";
+  float: right;
+  width: 18px;
+  text-align: left;
+  font-size: 14px;
+}
+.debugger-canvas .element-picker-wrapper .spot input.composer-input.text-input {
+  border: none;
+  font-size: inherit;
+  margin-top: -3px;
+  color: inherit;
+}
+.debugger-canvas .element-picker-wrapper .spot.disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+.debugger-canvas .expression-evaluator {
+  width: 470px;
+}
+.debugger-canvas .workflow-vert-flex {
+  display: flex;
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+.debugger-canvas .workflow-debugger-pane {
+  display: flex;
+}
+.debugger-canvas .workflow-debugger-pane .workflow-display-panel {
+  height: 60px;
+  border-bottom: 1px #e8e8e8 solid;
+  overflow-x: hidden;
+  padding: 10px;
+  position: relative;
+}
+.debugger-canvas .workflow-debugger-pane .workflow-display-panel .workflow-display-panel-inner {
+  height: 60px;
+  width: 10000px;
+  position: relative;
+  overflow: hidden;
+}
+.debugger-canvas .workflow-debugger-pane .workflow-display-panel .workflow-item {
+  border: 1px solid #b4bfc3;
+  float: left;
+  padding: 13px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+.debugger-canvas .workflow-debugger-pane .workflow-display-panel .workflow-item.current {
+  color: white;
+  background-color: #899ea5;
+  border: 1px solid #899ea5;
+}
+.debugger-canvas .workflow-debugger-pane .workflow-display-panel .pre-action-arrow {
+  float: left;
+  font-size: 16px;
+  color: #899ea5;
+  margin-top: 21px;
+  margin-left: 10px;
+}
+.debugger-canvas .element-inspector-pane,
+.debugger-canvas .workflow-debugger-pane,
+.debugger-canvas .error-console {
+  float: left;
+  width: 100%;
+  height: 250px;
+  border-top: 1px solid #cccccc;
+  font-size: 12px;
+}
+.debugger-canvas .element-properties {
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.debugger-canvas .expression-evaluator .section-super-title,
+.debugger-canvas .element-properties .section-super-title,
+.debugger-canvas .workflow-properties .section-super-title {
+  float: left;
+  clear: both;
+  margin-top: 30px;
+}
+.debugger-canvas .expression-evaluator .section-title,
+.debugger-canvas .element-properties .section-title,
+.debugger-canvas .workflow-properties .section-title {
+  float: left;
+  clear: both;
+  margin-top: 30px;
+  font-weight: bold;
+}
+.debugger-canvas .expression-evaluator .section-title:first-child,
+.debugger-canvas .element-properties .section-title:first-child,
+.debugger-canvas .workflow-properties .section-title:first-child {
+  margin-top: 0px;
+}
+.debugger-canvas .privacy-warning {
+  color: var(--color_danger_default_rgb);
+}
+.debugger-canvas .privacy-warning:before {
+  font-size: 10px;
+  font-family: "FontAwesome";
+  content: "\f071";
+  margin-right: 5px;
+}
+.debugger-canvas .error-console .clear-errors {
+  float: right;
+  margin-right: 10px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+.debugger-canvas .error-console .error-list {
+  float: left;
+  padding: 15px 0 20px 20px;
+  margin-right: 10px;
+  height: 210px;
+  overflow: auto;
+  width: 80%;
+}
+.debugger-canvas .error-console .error-list .error-row {
+  width: 100%;
+  margin-bottom: 15px;
+  float: left;
+  opacity: 0.6;
+}
+.debugger-canvas .error-console .error-list .error-row.non-seen {
+  opacity: 1;
+}
+.debugger-canvas .error-console .error-list .error-row .element-name,
+.debugger-canvas .error-console .error-list .error-row .property-name,
+.debugger-canvas .error-console .error-list .error-row .error-message,
+.debugger-canvas .error-console .error-list .error-row .date,
+.debugger-canvas .error-console .error-list .error-row .event-name,
+.debugger-canvas .error-console .error-list .error-row .general-name {
+  float: left;
+}
+.debugger-canvas .error-console .error-list .error-row .date {
+  color: #afafaf;
+  width: 48px;
+}
+.debugger-canvas .error-console .error-list .error-row .element-name,
+.debugger-canvas .error-console .error-list .error-row .general-name {
+  width: 200px;
+}
+.debugger-canvas .error-console .error-list .error-row .event-name,
+.debugger-canvas .error-console .error-list .error-row .element-name,
+.debugger-canvas .error-console .error-list .error-row .general-name {
+  margin-left: 20px;
+}
+.debugger-canvas .error-console .error-list .error-row .property-name {
+  margin-left: 20px;
+  width: 150px;
+}
+.debugger-canvas .error-console .error-list .error-row .error-message {
+  margin-top: 8px;
+  clear: left;
+  margin-left: 68px;
+  width: 90%;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+  cursor: text;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+.debugger-canvas .error-console .error-list .error-row .error-message .click-for-bug-report {
+  color: #0205d3;
+}
+.debugger-canvas .element-properties,
+.debugger-canvas .workflow-properties {
+  padding: 10px 0 10px 10px;
+}
+.debugger-canvas .element-properties .section-title,
+.debugger-canvas .workflow-properties .section-title {
+  width: 100%;
+}
+.debugger-canvas .element-inspector-pane {
+  display: flex;
+}
+.debugger-canvas .element-inspector-pane,
+.debugger-canvas .workflow-debugger-pane {
+  background-color: white;
+}
+.debugger-canvas .element-inspector-pane .expression-evaluator,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator {
+  border-left: 1px #e8e8e8 solid;
+  right: 0px;
+}
+.debugger-canvas .element-inspector-pane .workflow-properties,
+.debugger-canvas .element-inspector-pane .workflow-debugger-pane,
+.debugger-canvas .workflow-debugger-pane .workflow-properties,
+.debugger-canvas .workflow-debugger-pane .workflow-debugger-pane {
+  position: relative;
+  left: 0px;
+}
+.debugger-canvas .element-inspector-pane .element-properties,
+.debugger-canvas .element-inspector-pane .expression-evaluator,
+.debugger-canvas .workflow-debugger-pane .element-properties,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator {
+  height: 230px;
+}
+.debugger-canvas .element-inspector-pane .workflow-properties,
+.debugger-canvas .workflow-debugger-pane .workflow-properties {
+  height: 149px;
+}
+.debugger-canvas .element-inspector-pane .element-properties,
+.debugger-canvas .element-inspector-pane .workflow-properties,
+.debugger-canvas .element-inspector-pane .expression-evaluator,
+.debugger-canvas .workflow-debugger-pane .element-properties,
+.debugger-canvas .workflow-debugger-pane .workflow-properties,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator {
+  padding: 10px;
+  overflow-y: auto;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-val.empty,
+.debugger-canvas .element-inspector-pane .element-properties .eval.empty,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-val.empty,
+.debugger-canvas .element-inspector-pane .workflow-properties .eval.empty,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-val.empty,
+.debugger-canvas .element-inspector-pane .expression-evaluator .eval.empty,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-val.empty,
+.debugger-canvas .workflow-debugger-pane .element-properties .eval.empty,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-val.empty,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .eval.empty,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-val.empty,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .eval.empty {
+  color: #a6a6a6;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-val.hoverable,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-val.hoverable,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-val.hoverable,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-val.hoverable,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-val.hoverable,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-val.hoverable {
+  cursor: pointer;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div {
+  float: left;
+  width: 425px;
+  margin: 8px 0 0px 0;
+  overflow: hidden;
+  word-break: break-word;
+  line-height: 16px;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-name,
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-name,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-name,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .color-preview {
+  float: left;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-name.condition-true,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-name.condition-true,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-name.condition-true,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-name.condition-true,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-name.condition-true,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-name.condition-true {
+  color: #0cce92 !important;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-name.condition-false,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-name.condition-false,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-name.condition-false,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-name.condition-false,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-name.condition-false,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-name.condition-false {
+  color: var(--color_danger_default_rgb) !important;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-val {
+  max-width: 190px;
+  white-space: pre-line;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-val.img,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-val.img,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-val.img,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-val.img,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-val.img,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-val.img {
+  max-width: 140px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .image-preview,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .image-preview,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .image-preview,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .image-preview,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .image-preview,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .image-preview {
+  width: 30px;
+  margin-top: -8px;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .icon-preview,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .icon-preview,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .icon-preview,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .icon-preview,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .icon-preview,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .icon-preview {
+  height: 10px;
+  width: 10px;
+  margin-left: 5px;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .color-preview,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .color-preview {
+  border: 1px solid #c5c5c5;
+}
+.debugger-canvas .element-inspector-pane .element-properties .prop-div .prop-name,
+.debugger-canvas .element-inspector-pane .workflow-properties .prop-div .prop-name,
+.debugger-canvas .element-inspector-pane .expression-evaluator .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .element-properties .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .prop-div .prop-name,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .prop-div .prop-name {
+  width: 230px;
+  height: 13px;
+  overflow: hidden;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper {
+  float: left;
+  clear: both;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper .prop-div {
+  float: left;
+  clear: both;
+  font-style: italic;
+  padding-right: 2px;
+  width: 100%;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper .prop-div .prop-val,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper .prop-div .prop-val,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper .prop-div .prop-val {
+  max-width: none;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper.state-is-on .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper.state-is-on .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper.state-is-on .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper.state-is-on .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper.state-is-on .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper.state-is-on .prop-div {
+  color: #0cce92 !important;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper.state-is-off .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper.state-is-off .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper.state-is-off .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper.state-is-off .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper.state-is-off .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper.state-is-off .prop-div {
+  color: var(--color_danger_default_rgb) !important;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-wrapper:first-child,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-wrapper:first-child,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-wrapper:first-child,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-wrapper:first-child,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-wrapper:first-child,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-wrapper:first-child {
+  margin-top: 10px;
+}
+.debugger-canvas .element-inspector-pane .element-properties .state-properties,
+.debugger-canvas .element-inspector-pane .workflow-properties .state-properties,
+.debugger-canvas .element-inspector-pane .expression-evaluator .state-properties,
+.debugger-canvas .workflow-debugger-pane .element-properties .state-properties,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .state-properties,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .state-properties {
+  float: left;
+  clear: both;
+}
+.debugger-canvas .element-inspector-pane .element-properties .objectlist,
+.debugger-canvas .element-inspector-pane .element-properties .staticlist,
+.debugger-canvas .element-inspector-pane .workflow-properties .objectlist,
+.debugger-canvas .element-inspector-pane .workflow-properties .staticlist,
+.debugger-canvas .element-inspector-pane .expression-evaluator .objectlist,
+.debugger-canvas .element-inspector-pane .expression-evaluator .staticlist,
+.debugger-canvas .workflow-debugger-pane .element-properties .objectlist,
+.debugger-canvas .workflow-debugger-pane .element-properties .staticlist,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .objectlist,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .staticlist,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .objectlist,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .staticlist {
+  float: left;
+  clear: left;
+}
+.debugger-canvas .element-inspector-pane .element-properties .objectlist .subprop,
+.debugger-canvas .element-inspector-pane .element-properties .staticlist .subprop,
+.debugger-canvas .element-inspector-pane .workflow-properties .objectlist .subprop,
+.debugger-canvas .element-inspector-pane .workflow-properties .staticlist .subprop,
+.debugger-canvas .element-inspector-pane .expression-evaluator .objectlist .subprop,
+.debugger-canvas .element-inspector-pane .expression-evaluator .staticlist .subprop,
+.debugger-canvas .workflow-debugger-pane .element-properties .objectlist .subprop,
+.debugger-canvas .workflow-debugger-pane .element-properties .staticlist .subprop,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .objectlist .subprop,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .staticlist .subprop,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .objectlist .subprop,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .staticlist .subprop {
+  float: left;
+  margin-left: 10px;
+}
+.debugger-canvas .element-inspector-pane .element-properties .objectlist .subprop .prop-div,
+.debugger-canvas .element-inspector-pane .element-properties .staticlist .subprop .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .objectlist .subprop .prop-div,
+.debugger-canvas .element-inspector-pane .workflow-properties .staticlist .subprop .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .objectlist .subprop .prop-div,
+.debugger-canvas .element-inspector-pane .expression-evaluator .staticlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .objectlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .element-properties .staticlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .objectlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .staticlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .objectlist .subprop .prop-div,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .staticlist .subprop .prop-div {
+  width: 100% !important;
+}
+.debugger-canvas .element-inspector-pane .element-properties .objectlist .subprop *,
+.debugger-canvas .element-inspector-pane .element-properties .staticlist .subprop *,
+.debugger-canvas .element-inspector-pane .workflow-properties .objectlist .subprop *,
+.debugger-canvas .element-inspector-pane .workflow-properties .staticlist .subprop *,
+.debugger-canvas .element-inspector-pane .expression-evaluator .objectlist .subprop *,
+.debugger-canvas .element-inspector-pane .expression-evaluator .staticlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .element-properties .objectlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .element-properties .staticlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .objectlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .workflow-properties .staticlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .objectlist .subprop *,
+.debugger-canvas .workflow-debugger-pane .expression-evaluator .staticlist .subprop * {
+  float: left;
+}
+.debugger-canvas .custom-states-evals {
+  float: left;
+  clear: both;
+}
+.debugger-canvas .custom-states-evals .prop-div.state {
+  margin-top: 0px;
+}
+.debugger-canvas .custom-states-evals .prop-div.state > .expression-text {
+  width: 225px;
+}
+.debugger-canvas .custom-states-evals .privacy-warning {
+  margin-left: 5px !important;
+}
+.debugger-canvas .custom-states-evals .privacy-warning.datasource-changed-by-action {
+  margin-left: 0px !important;
+}
+.debugger-canvas .custom-states-evals .prop-div.state > .eval.composite {
+  clear: none !important;
+  margin-left: 15px !important;
+}
+.debugger-canvas .custom-states-evals .prop-div.state > .eval.composite.privacy-impact {
+  clear: left !important;
+  margin-left: 230px !important;
+}
+.debugger-canvas .expression-evaluator .expression,
+.debugger-canvas .expression-evaluator .evaluation,
+.debugger-canvas .expression-evaluator .analysis,
+.debugger-canvas .expression-evaluator .slidable-prop-divs,
+.debugger-canvas .custom-states-evals .expression,
+.debugger-canvas .custom-states-evals .evaluation,
+.debugger-canvas .custom-states-evals .analysis,
+.debugger-canvas .custom-states-evals .slidable-prop-divs {
+  width: 100%;
+  float: left;
+  clear: both;
+  white-space: pre-wrap;
+}
+.debugger-canvas .expression-evaluator .evaluation,
+.debugger-canvas .expression-evaluator .slidable-prop-divs,
+.debugger-canvas .custom-states-evals .evaluation,
+.debugger-canvas .custom-states-evals .slidable-prop-divs {
+  margin-top: 10px;
+}
+.debugger-canvas .expression-evaluator .back-btn,
+.debugger-canvas .custom-states-evals .back-btn {
+  float: right;
+  cursor: pointer;
+  color: #a9a9a9;
+}
+.debugger-canvas .expression-evaluator .back-btn:hover,
+.debugger-canvas .custom-states-evals .back-btn:hover {
+  color: #5d6c71;
+}
+.debugger-canvas .expression-evaluator .expression-node-div,
+.debugger-canvas .expression-evaluator .expression-text,
+.debugger-canvas .expression-evaluator .eval,
+.debugger-canvas .expression-evaluator .prop-div,
+.debugger-canvas .expression-evaluator .privacy-warning,
+.debugger-canvas .custom-states-evals .expression-node-div,
+.debugger-canvas .custom-states-evals .expression-text,
+.debugger-canvas .custom-states-evals .eval,
+.debugger-canvas .custom-states-evals .prop-div,
+.debugger-canvas .custom-states-evals .privacy-warning {
+  float: left;
+  margin-top: 8px;
+}
+.debugger-canvas .expression-evaluator .click-for-more,
+.debugger-canvas .custom-states-evals .click-for-more {
+  float: right;
+  margin-top: 3px;
+  color: #a6a6a6;
+  margin-left: 4px;
+}
+.debugger-canvas .expression-evaluator .show-list > .expression-text > .click-for-more,
+.debugger-canvas .custom-states-evals .show-list > .expression-text > .click-for-more {
+  margin-top: 0px;
+}
+.debugger-canvas .expression-evaluator .prop-name,
+.debugger-canvas .custom-states-evals .prop-name {
+  width: 110px !important;
+}
+.debugger-canvas .expression-evaluator .prop-div,
+.debugger-canvas .custom-states-evals .prop-div {
+  clear: both;
+  width: 100% !important;
+}
+.debugger-canvas .expression-evaluator .objectlist .subprop .geographic-search-div .prop-div,
+.debugger-canvas .custom-states-evals .objectlist .subprop .geographic-search-div .prop-div {
+  width: auto !important;
+  margin-top: 0px;
+  clear: none;
+}
+.debugger-canvas .expression-evaluator .objectlist .subprop .geographic-search-div > *,
+.debugger-canvas .custom-states-evals .objectlist .subprop .geographic-search-div > * {
+  margin-left: 5px;
+}
+.debugger-canvas .expression-evaluator .staticlist .subprop .geographic-search-div .prop-div,
+.debugger-canvas .custom-states-evals .staticlist .subprop .geographic-search-div .prop-div {
+  width: auto !important;
+  margin-top: 0px;
+  clear: none;
+}
+.debugger-canvas .expression-evaluator .staticlist .subprop .geographic-search-div > *,
+.debugger-canvas .custom-states-evals .staticlist .subprop .geographic-search-div > * {
+  margin-left: 5px;
+}
+.debugger-canvas .expression-evaluator .prop-name,
+.debugger-canvas .custom-states-evals .prop-name {
+  margin-right: 5px;
+}
+.debugger-canvas .expression-evaluator .eval,
+.debugger-canvas .custom-states-evals .eval {
+  margin-left: 5px;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -o-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+.debugger-canvas .expression-evaluator .eval.composite,
+.debugger-canvas .custom-states-evals .eval.composite {
+  clear: left;
+  margin-left: 15px;
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+.debugger-canvas .expression-evaluator .eval img.image-preview,
+.debugger-canvas .custom-states-evals .eval img.image-preview {
+  width: 30px;
+  margin-top: -3px;
+}
+.debugger-canvas .expression-evaluator .eval.hoverable,
+.debugger-canvas .custom-states-evals .eval.hoverable {
+  cursor: pointer;
+}
+.debugger-canvas .expression-evaluator .expression-text,
+.debugger-canvas .custom-states-evals .expression-text {
+  clear: left;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+.debugger-canvas .expression-evaluator .expression-text.composite,
+.debugger-canvas .custom-states-evals .expression-text.composite {
+  cursor: pointer;
+  margin-left: -14px;
+}
+.debugger-canvas .expression-evaluator .expression-text.composite:before,
+.debugger-canvas .custom-states-evals .expression-text.composite:before {
+  margin-right: 4px;
+  font-size: 15px;
+}
+.debugger-canvas .expression-evaluator .expression-text.composite.opened:before,
+.debugger-canvas .custom-states-evals .expression-text.composite.opened:before {
+  content: "-";
+  margin-left: 2px;
+  margin-right: 6px;
+}
+.debugger-canvas .expression-evaluator .expression-text.composite.closed:before,
+.debugger-canvas .custom-states-evals .expression-text.composite.closed:before {
+  content: "+";
+}
+.debugger-canvas .dynamic-expression,
+.debugger-canvas .dynamic-expression .empty {
+  cursor: pointer;
+  color: #0205d3 !important;
+}
+.debugger-canvas .dynamic-expression.selected, .debugger-canvas .dynamic-expression:hover,
+.debugger-canvas .dynamic-expression .empty.selected,
+.debugger-canvas .dynamic-expression .empty:hover {
+  background-color: #0205d3;
+  color: white !important;
+}
+.debugger-canvas .injected-expression {
+  color: black !important;
+}
+.debugger-canvas .btn {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  color: white;
+  width: 90px;
+  height: 22px;
+  padding-top: 6px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #0205d3;
+}
+.debugger-canvas .btn.disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+.debugger-canvas .btn.red {
+  background-color: #0205d3;
+}
+.debugger-canvas .btn.red:hover {
+  background-color: #0602db;
+}
+.debugger-canvas .btn.grey {
+  border-color: #0205d3;
+  background-color: white;
+  color: #0205d3;
+}
+.debugger-canvas .btn.grey:hover {
+  background-color: rgba(4, 0, 255, 0.1);
+}
+.debugger-canvas .btn.grey.disabled:hover {
+  background-color: white;
+}
+
+.greyout-when-debugging {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50000013;
+  background-color: rgba(109, 109, 109, 0.46);
+}
+
+.highlight-box {
+  pointer-events: none;
+  background-color: red;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 2000001;
+}
+
+.debugger-page-mention {
+  position: absolute;
+  bottom: 70px;
+  font-size: 12px;
+  color: grey;
+  width: 100%;
+  text-align: center;
+  white-space: pre;
+  line-height: 2;
+}
