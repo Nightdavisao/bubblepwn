@@ -18,7 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.dispatchEvent(bubbleAppEvent);
 
         if (window.start_debugger) {
+            console.log('bubble-pwn: starting debugger');
             window.start_debugger();
+        } else {
+            console.warn('bubble-pwn: start_debugger not found');
         }
 
         const eventEmitter = new EventEmitter<string | symbol, any>();
