@@ -2,7 +2,6 @@ import { Patch } from "../instrument";
 import * as recast from 'recast';
 const n = recast.types.namedTypes;
 const b = recast.types.builders;
-import * as acorn from 'acorn'
 import { PARSER_OPTIONS } from "../../utils";
 
 export class DebugPatch implements Patch {
@@ -46,12 +45,14 @@ export class DebugPatch implements Patch {
                     // replace with cb(true)
                     modified = modified.replace(body, 'cb(true)');
                     console.log('can_view body:', body);
+                } else {
+                    console.warn('failed to find can_view body');
                 }
 
                 return modified
             }
         }
-        console.warn("Failed to apply Debug patch");
+        console.warn("failed to apply debug patch");
         return script
     }
 }

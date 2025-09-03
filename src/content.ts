@@ -16,12 +16,10 @@ s.onload = function() {
 };
 (document.head || document.documentElement).appendChild(s)
 
-// Listen for bubble app detection from inject script
 document.addEventListener('bubbleAppDetected', (event: Event) => {
     const customEvent = event as CustomEvent;
     const domain = customEvent.detail.domain;
     
-    // If domain wasn't in list before, refresh the page
     browser.storage.local.get('bubbleDomains').then(result => {
         const domains = result.bubbleDomains as string[] || [];
         if (!domains.includes(domain)) {

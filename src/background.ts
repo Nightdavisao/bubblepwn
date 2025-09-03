@@ -4,7 +4,7 @@ import { DatabasePatch } from './modding/patches/database';
 import { DebugPatch } from './modding/patches/debugMode';
 import { ExposeVariablesPatch } from './modding/patches/exposeVariables';
 
-const allowedBubbleDomains: string[] = []
+const allowedBubbleDomains: string[] = ['bubble.io']
 
 // get allowed bubble domains from storage
 browser.storage.local.get('bubbleDomains').then((result: { bubbleDomains?: string[] }) => {
