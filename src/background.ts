@@ -53,10 +53,10 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
     if (allowedBubbleDomains.includes(domain)) {
         console.log('manipulating ' + domain)
 
-        if (url.pathname.match(/\/package\/run_js\/[a-f0-9]{64}\/xfalse\/x\d+\/run\.js/)) {
+        if (url.pathname.startsWith('/package/run_js/')) {
             console.log('REDIRECTING TO THE DEBUG SCRIPT!')
             return { redirectUrl: url.toString().replace('/run_js/', '/run_debug_js/') };
-        } else if (url.pathname.match(/\/package\/run_debug_js\/[a-f0-9]{64}\/xfalse\/x\d+\/run\.js/)) {
+        } else if (url.pathname.startsWith('/package/run_debug_js/')) {
             console.log('time to filter')
             const filter = browser.webRequest.filterResponseData(details.requestId);
             const decoder = new TextDecoder("utf-8");
@@ -87,6 +87,8 @@ browser.webRequest.onBeforeRequest.addListener((details) => {
                     filter.close();
                 }
             }
+        } else {
+            console.log('COLONIG');
         }
     }
 
