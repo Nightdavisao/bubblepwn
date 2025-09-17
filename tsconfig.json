@@ -14,7 +14,14 @@
         "resolveJsonModule": true,
         "moduleResolution": "node",
         "sourceMap": true,
-        "typeRoots": ["./node_modules/@types", "./src"]
+        "typeRoots": ["./node_modules/@types", "./src"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "preact",
+        "baseUrl": ".",
+        "paths": {
+            "react": ["node_modules/preact/compat"],
+            "react-dom": ["node_modules/preact/compat"]
+        }
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]

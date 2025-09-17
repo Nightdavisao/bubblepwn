@@ -9,18 +9,22 @@ import alias from '@rollup/plugin-alias';
 
 const plugins = [
     //nodePolyfills(),
+    copy('assets/**'),
+    commonjs(),
     alias({
-        entries: stdLibBrowser
+        entries: {
+            ...stdLibBrowser,
+            "react": "preact/compat",
+            "react-dom": "preact/compat"
+        }
     }),
     resolve({ browser: true, preferBuiltins: false }),
-    commonjs(),
     inject({
         process: stdLibBrowser.process,
     }),
     typescript({
         tsconfig: './tsconfig.json'
     }),
-    copy('assets/*')
 ];
 
 export default [
@@ -52,6 +56,15 @@ export default [
             //     'node:os': 'os',
             //     'node:module': 'module'
             // }
+        },
+        plugins
+    },
+    {
+        input: 'src/popup.tsx',
+        output: {
+            file: 'dist/popup.js',
+            format: 'iife',
+            sourcemap: true
         },
         plugins
     }

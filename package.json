@@ -29,7 +29,7 @@
   "dependencies": {
     "acorn": "^8.15.0",
     "eventemitter3": "^5.0.1",
-    "lighterhtml": "^4.2.0",
+    "preact": "^10.27.1",
     "recast": "github:Nightdavisao/recast#browser",
     "webextension-polyfill": "^0.12.0"
   }

@@ -1,18 +1,18 @@
 import { EventEmitter } from 'eventemitter3';
-import { html, render } from 'lighterhtml'
+import { BubbleInfo } from './types/interfaces';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', (): void => {
     // get the html of the current page
-    const pageHtml = document.documentElement.outerHTML;
-    const rgx = /if\s*\(!window\._bubble_page_load_data\)/;
-    const match = pageHtml.match(rgx);
+    const pageHtml: string = document.documentElement.outerHTML;
+    const rgx: RegExp = /if\s*\(!window\._bubble_page_load_data\)/;
+    const match: RegExpMatchArray | null = pageHtml.match(rgx);
 
     if (match) {
         console.log('bubble-pwn: we\'re on a bubble app')
 
         // Send message to content script that this is a bubble app
-        const domain = window.location.hostname;
-        const bubbleAppEvent = new CustomEvent('bubbleAppDetected', {
+        const domain: string = window.location.hostname;
+        const bubbleAppEvent: CustomEvent<{ domain: string }> = new CustomEvent('bubbleAppDetected', {
             detail: { domain: domain }
         });
         document.dispatchEvent(bubbleAppEvent);
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('bubble-pwn: start_debugger not found');
         }
 
-        const eventEmitter = new EventEmitter<string | symbol, any>();
+        const eventEmitter: EventEmitter<string | symbol, any> = new EventEmitter<string | symbol, any>();
         window.bubblePWN = window.bubblePWN || {};
         window.bubblePWN.event = {
             on: eventEmitter.on.bind(eventEmitter),
@@ -32,35 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
             emit: eventEmitter.emit.bind(eventEmitter)
         };
 
-        // we're on a bubble app
-        const iframe = document.createElement('iframe');
-        iframe.style.cssText = 'background-color: black; color: white; position: fixed; bottom: 0px; right: 0px; border: none; z-index: 99999;';
-        document.body.appendChild(iframe);
-
-        iframe.onload = () => {
-            const doc = iframe.contentDocument;
-            if (doc) {
-                doc.open();
-                const savedQueries: any[] = []
-
-                window.bubblePWN.event.on('db_query', (query: any) => {
-                    savedQueries.push(query);
-                    renderPwn();
-                });
-                const renderPwn = () => {
-                    const component = () => html`
-                        <div style="color: white;">
-                            <span>DB queries</span>
-                            <pre>
-                                ${[...savedQueries].reverse().map(query => html`<li>${JSON.stringify(query, null, 2)}</li>`)}
-                            </pre>
-                        </div>
-                    `;
-                    render(doc.body, component);
-                }
-                //renderPwn();
-                doc.close();
-            }
+        const appInfo: BubbleInfo = {
+            appPlan: window.bubblePWN.lib_default().app_plan(),
+            appName: window.bubblePWN.lib_default().appname(),
+            appLanguage: window.bubblePWN.lib_default().app_language(),
+            bubbleVersion: window.bubblePWN.lib_default().bubble_version()
         };
+
+        const appInfoEvent: CustomEvent<{ domain: string; info: BubbleInfo }> = new CustomEvent('bubbleAppInfo', {
+            detail: { domain, info: appInfo }
+        });
+        document.dispatchEvent(appInfoEvent);
+
+        window.bubblePWN.event.emit('app_info', { 
+            domain,
+            info: appInfo
+        });
     }
 })
